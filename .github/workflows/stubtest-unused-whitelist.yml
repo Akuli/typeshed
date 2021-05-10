@@ -8,7 +8,6 @@ permissions:
 jobs:
   foobar:
     runs-on: ubuntu-latest
-    needs: stubtest
     steps:
       - uses: actions/checkout@v2
       - run: |
