@@ -10,7 +10,6 @@ permissions:
   contents: write
   deployments: write
   issues: write
-  packages: write
   pull-requests: write
 
 jobs:
