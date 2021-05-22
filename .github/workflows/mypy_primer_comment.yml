@@ -40,6 +40,7 @@ jobs:
       - run: unzip diff.zip
 
       - name: Post comment
+        id: post-comment
         uses: actions/github-script@v3
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -62,14 +63,17 @@ jobs:
               body = 'According to [mypy_primer](https://github.com/hauntsaninja/mypy_primer), this change has no effect on the checked open source code. '
             }
 
+            const prNumber = parseInt(fs.readFileSync("pr_number.txt", { encoding: "utf8" }))
             await github.issues.createComment({
-              issue_number: fs.readFileSync("pr_number.txt", { encoding: "utf8" }),
+              issue_number: prNumber,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body
             })
+            return prNumber
 
       - uses: kanga333/comment-hider@bbdf5b562fbec24e6f60572d8f712017428b92e0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           leave_visible: 1
+          issue_number: ${{ steps.post-comment.outputs.result }}
