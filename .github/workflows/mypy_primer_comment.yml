@@ -69,9 +69,7 @@ jobs:
               body
             })
 
-      - uses: Akuli/comment-hider@master
-        name: Hide old comments
+      - uses: kanga333/comment-hider@bbdf5b562fbec24e6f60572d8f712017428b92e0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           leave_visible: 1
-
