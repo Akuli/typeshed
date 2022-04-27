@@ -1,7 +1,7 @@
 import sys
 from _typeshed import Self, StrPath
 from collections.abc import AsyncIterator, Awaitable, Callable, Iterable, Sequence
-from typing import Any
+from typing import Any, overload
 from typing_extensions import TypeAlias
 
 from . import events, protocols, transports
@@ -78,40 +78,197 @@ if sys.version_info < (3, 8):
         consumed: int
         def __init__(self, message: str, consumed: int) -> None: ...
 
+# Must specify one or the other: sock or host/port.
+# If sock specified, can't specify host or port.
+# If host or port specified, possibly both, can't specify sock.
 if sys.version_info >= (3, 10):
+    # host given, possibly port too
+    @overload
     async def open_connection(
-        host: str | None = ...,
+        host: str,
         port: int | str | None = ...,
         *,
+        sock: None = ...,
         limit: int = ...,
         ssl_handshake_timeout: float | None = ...,
         **kwds: Any,
     ) -> tuple[StreamReader, StreamWriter]: ...
+    # port given (as positional or as keyword), possibly host too
+    @overload
+    async def open_connection(
+        host: str | None,
+        port: int | str,
+        *,
+        sock: None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> tuple[StreamReader, StreamWriter]: ...
+    @overload
+    async def open_connection(
+        host: str | None = ...,
+        *,
+        port: int | str,
+        sock: None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> tuple[StreamReader, StreamWriter]: ...
+    # sock given
+    @overload
+    async def open_connection(
+        host: None = ...,
+        port: None = ...,
+        *,
+        sock: socket.socket,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> tuple[StreamReader, StreamWriter]: ...
+
+    # host given, possibly port too
+    @overload
+    async def start_server(
+        client_connected_cb: _ClientConnectedCallback,
+        host: str | Sequence[str],
+        port: int | str | None = ...,
+        *,
+        sock: None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> Server: ...
+    # port given (as positional or as keyword), possibly host too
+    @overload
+    async def start_server(
+        client_connected_cb: _ClientConnectedCallback,
+        host: str | Sequence[str] | None,
+        port: int | str,
+        *,
+        sock: None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> Server: ...
+    @overload
     async def start_server(
         client_connected_cb: _ClientConnectedCallback,
         host: str | Sequence[str] | None = ...,
-        port: int | str | None = ...,
         *,
+        port: int | str,
+        sock: None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> Server: ...
+    # sock given
+    @overload
+    async def start_server(
+        client_connected_cb: _ClientConnectedCallback,
+        host: None = ...,
+        port: None = ...,
+        *,
+        sock: socket.socket,
         limit: int = ...,
         ssl_handshake_timeout: float | None = ...,
         **kwds: Any,
     ) -> Server: ...
 
 else:
+    # host given, possibly port too
+    @overload
     async def open_connection(
-        host: str | None = ...,
+        host: str,
         port: int | str | None = ...,
         *,
+        sock: None = ...,
         loop: events.AbstractEventLoop | None = ...,
         limit: int = ...,
         ssl_handshake_timeout: float | None = ...,
         **kwds: Any,
     ) -> tuple[StreamReader, StreamWriter]: ...
+    # port given (as positional or as keyword), possibly host too
+    @overload
+    async def open_connection(
+        host: str | None,
+        port: int | str,
+        *,
+        sock: None = ...,
+        loop: events.AbstractEventLoop | None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> tuple[StreamReader, StreamWriter]: ...
+    @overload
+    async def open_connection(
+        host: str | None = ...,
+        *,
+        port: int | str,
+        sock: None = ...,
+        loop: events.AbstractEventLoop | None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> tuple[StreamReader, StreamWriter]: ...
+    # sock given
+    @overload
+    async def open_connection(
+        host: None = ...,
+        port: None = ...,
+        *,
+        sock: socket.socket,
+        loop: events.AbstractEventLoop | None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> tuple[StreamReader, StreamWriter]: ...
+
+    # host given, possibly port too
+    @overload
+    async def start_server(
+        client_connected_cb: _ClientConnectedCallback,
+        host: str,
+        port: int | str | None = ...,
+        *,
+        sock: None = ...,
+        loop: events.AbstractEventLoop | None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> Server: ...
+    # port given (as positional or as keyword), possibly host too
+    @overload
+    async def start_server(
+        client_connected_cb: _ClientConnectedCallback,
+        host: str | None,
+        port: int | str,
+        *,
+        sock: None = ...,
+        loop: events.AbstractEventLoop | None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> Server: ...
+    @overload
     async def start_server(
         client_connected_cb: _ClientConnectedCallback,
         host: str | None = ...,
-        port: int | str | None = ...,
         *,
+        port: int | str,
+        sock: None = ...,
+        loop: events.AbstractEventLoop | None = ...,
+        limit: int = ...,
+        ssl_handshake_timeout: float | None = ...,
+        **kwds: Any,
+    ) -> Server: ...
+    # sock given
+    @overload
+    async def start_server(
+        client_connected_cb: _ClientConnectedCallback,
+        host: None = ...,
+        port: None = ...,
+        *,
+        sock: socket.socket,
         loop: events.AbstractEventLoop | None = ...,
         limit: int = ...,
         ssl_handshake_timeout: float | None = ...,
